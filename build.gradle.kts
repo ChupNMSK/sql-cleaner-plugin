@@ -20,8 +20,10 @@ dependencies {
     implementation("org.slf4j:slf4j-api:2.0.7")
     implementation("ch.qos.logback:logback-classic:1.4.5")
 
-    implementation("jakarta.xml.bind:jakarta.xml.bind-api:4.0.0")
-    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -41,6 +43,10 @@ tasks {
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions.jvmTarget = "17"
+    }
+
+    withType<Test> {
+        useJUnitPlatform();
     }
 
     patchPluginXml {

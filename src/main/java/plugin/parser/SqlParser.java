@@ -4,7 +4,7 @@ import static plugin.parser.SqlParsingChain.newSqlNode;
 
 import java.util.StringTokenizer;
 
-import plugin.formatter.ddl.create.CreateTableFormatter;
+import plugin.formatter.ddl.create.CreateTableQueryFormatter;
 import plugin.formatter.dml.delete.DeleteQueryFormatter;
 import plugin.formatter.dml.insert.InsertQueryFormatter;
 
@@ -21,7 +21,7 @@ public class SqlParser {
 
         ROOT.addChild(newSqlNode("CREATE")
                 .addChild(newSqlNode("TABLE")
-                        .with(new CreateTableFormatter())));
+                        .with(new CreateTableQueryFormatter())));
 
         ROOT.addChild(newSqlNode("DELETE")
                 .with(new DeleteQueryFormatter()));

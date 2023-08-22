@@ -1,0 +1,1 @@
+delete from table_name where column1 = value1 and column2 = value2;

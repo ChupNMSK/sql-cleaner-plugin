@@ -1,12 +1,12 @@
-package plugin.formatter.dml.insert;
+package plugin.formatter.ddl.create;
 
 import plugin.formatter.AbstractFormatterTest;
 import plugin.formatter.QueryFormatter;
 
-class InsertQueryFormatterTest extends AbstractFormatterTest {
+public class CreateTableQueryFormatterTest extends AbstractFormatterTest {
 
     @Override
     protected QueryFormatter queryFormatterForTest() {
-        return new InsertQueryFormatter();
+        return new CreateTableQueryFormatter();
     }
 }

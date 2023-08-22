@@ -1,5 +1,7 @@
 package plugin.formatter.dml.delete;
 
+import static plugin.formatter.GeneralConfig.BR;
+
 import plugin.formatter.QueryFormatter;
 import plugin.model.sql.Keywords;
 
@@ -16,38 +18,28 @@ public final class DeleteQueryFormatter implements QueryFormatter {
         int nestingLevel = 1;
 
         for (String token : tokens) {
-            if (isKeyword(token)) {
+            if (Keywords.isKeyword(token)) {
                 formatKeyword(formattedQuery, token, nestingLevel, maxKeywordLength);
             } else {
-                formattedQuery.append(token);
-                formattedQuery.append(" ");
-            }
-
-            if (token.endsWith(";")) {
-                formattedQuery.append("\n");
+                formattedQuery.append(" ").append(token);
             }
         }
 
         return formattedQuery.toString().trim();
     }
 
-    private boolean isKeyword(String word) {
-        return Keywords.isKeyword(word);
-    }
-
     private void formatKeyword(StringBuilder sb, String keyword, int nestingLevel, int maxKeywordLength) {
-        sb.append("\n");
-        sb.append(" ".repeat( nestingLevel * (maxKeywordLength - keyword.length()) ));
+        sb.append(BR);
+        //todo: align right method
+        sb.append(" ".repeat(nestingLevel * (maxKeywordLength - keyword.length())));
         sb.append(keyword.toUpperCase());
-        sb.append(" ");
     }
 
-
-    private int getMaxKeywordLength(String[] words) {
+    private int getMaxKeywordLength(String[] tokens) {
         int maxKeywordLength = 0;
-        for (String word : words) {
-            if (isKeyword(word) && word.length() > maxKeywordLength) {
-                maxKeywordLength = word.length();
+        for (String token : tokens) {
+            if (Keywords.isKeyword(token) && token.length() > maxKeywordLength) {
+                maxKeywordLength = token.length();
             }
         }
         return maxKeywordLength;

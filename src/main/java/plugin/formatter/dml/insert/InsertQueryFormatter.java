@@ -1,5 +1,11 @@
 package plugin.formatter.dml.insert;
 
+import static plugin.formatter.GeneralConfig.BR;
+import static plugin.formatter.GeneralConfig.DIVINE_ON;
+import static plugin.formatter.GeneralConfig.MAX_LENGTH;
+import static plugin.formatter.GeneralConfig.TAB;
+import static plugin.util.StringsUtil.replaceLastEntry;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -12,23 +18,20 @@ import plugin.formatter.QueryFormatter;
 public class InsertQueryFormatter implements QueryFormatter {
 
     private static final Pattern INSERT_INTO_PATTERN =
-                                    Pattern.compile("(?i)INSERT\\s+INTO\\s+(.*?)\\s+");
+            Pattern.compile("(?i)INSERT\\s+INTO\\s+(.*?)\\s+");
     private static final Pattern COLUMNS_VALUES_PATTERN = Pattern.compile("\\(([^),]+(?:,\\s*[^),]+)+)\\)");
-
-    private static final int MAX_LENGTH = 120;
-
-    private static final int DIVINE_ON = 3;
 
     @Override
     public String format(String query) {
         StringBuilder formattedQuery = new StringBuilder();
         String tableName = getTableName(query);
         Map<Integer, String> map = getColumnValues(query);
+
         log.info("Column values map: {}", map);
         boolean isTooLong = map.values()
-                                .stream()
-                                .anyMatch(str -> str.length() + 4 > MAX_LENGTH);
-        if(isTooLong) {
+                .stream()
+                .anyMatch(str -> str.length() + 4 > MAX_LENGTH);
+        if (isTooLong) {
             map.forEach((key, value) -> map.put(key, divideAndAlign(value, DIVINE_ON)));
         } else {
             map.forEach((key, value) -> map.put(key, join(splitOnParts(value))));
@@ -36,26 +39,28 @@ public class InsertQueryFormatter implements QueryFormatter {
 
         String columNames = map.remove(0); //first group is columns
 
-        //append insert into table_name
-        formattedQuery.append("INSERT INTO ").append(tableName.toLowerCase()).append("\n");
 
-        //append column names
-        formattedQuery.append("\t").append(columNames.toLowerCase()).append("\n");
+        formattedQuery.append("INSERT INTO ")
+                .append(tableName.toLowerCase())
+                .append(BR)
+                .append(TAB)
+                .append(columNames.toLowerCase())
+                .append(BR)
+                .append("VALUES")
+                .append(BR)
+                .append(TAB);
 
-        //append values
-        formattedQuery.append("VALUES\n").append("\t");
-        for(String valueGroup : map.values()) {
-            formattedQuery.append(valueGroup).append(",\n").append("\t");
+        for (String valueGroup : map.values()) {
+            formattedQuery.append(valueGroup)
+                    .append(",")
+                    .append(BR)
+                    .append(TAB);
         }
 
-        replaceLastEntry(",\n", ";", formattedQuery);
+        replaceLastEntry("," + BR, ";", formattedQuery);
 
-        log.info("Formatted query {}" , formattedQuery);
+        log.info("Formatted query {}", formattedQuery);
         return formattedQuery.toString();
-    }
-
-    private void replaceLastEntry(String oldValue, String newValue, StringBuilder sb) {
-        sb.replace(sb.lastIndexOf(oldValue), sb.length(), newValue);
     }
 
     private String getTableName(String query) {
@@ -65,15 +70,34 @@ public class InsertQueryFormatter implements QueryFormatter {
     }
 
     private Map<Integer, String> getColumnValues(String query) {
+        Map<Integer, String> columnValues = parseColumnAndValues(query);
+
+        alignColumnAndValues(columnValues);
+        log.info("Column values map: {}", columnValues);
+        return columnValues;
+    }
+
+    private Map<Integer, String> parseColumnAndValues(String query) {
         Map<Integer, String> columnValues = new HashMap<>();
 
         Matcher matcher = COLUMNS_VALUES_PATTERN.matcher(query);
-
-        for(int group = 0; matcher.find(); group++) {
+        for (int group = 0; matcher.find(); group++) {
             columnValues.put(group, matcher.group());
         }
 
         return columnValues;
+    }
+
+    private void alignColumnAndValues(Map<Integer, String> columnValues) {
+        boolean isTooLong = columnValues.values()
+                .stream()
+                .anyMatch(str -> str.length() + 4 > MAX_LENGTH);
+
+        if (isTooLong) {
+            columnValues.forEach((key, value) -> columnValues.put(key, divideAndAlign(value, DIVINE_ON)));
+        } else {
+            columnValues.forEach((key, value) -> columnValues.put(key, join(splitOnParts(value))));
+        }
     }
 
     private String join(String[] parts) {
@@ -85,8 +109,10 @@ public class InsertQueryFormatter implements QueryFormatter {
 
         String[] parts = splitOnParts(string);
         for (int i = 0; i < parts.length; i++) {
-            if(i > 0 && i % divideOn == 0) {
-                sb.append("\n").append("\t ");
+            if (i > 0 && i % divideOn == 0) {
+                //remove space in end of row
+                replaceLastEntry(" ", "", sb);
+                sb.append(BR).append(TAB + " ");
             }
 
             sb.append(parts[i]).append(", ");

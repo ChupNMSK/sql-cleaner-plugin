@@ -1,0 +1,1 @@
+insert into table1 (COLUMN1, COLUMN2, COLUMN3) values (VALUE1, VALUE2, VALUE3);
