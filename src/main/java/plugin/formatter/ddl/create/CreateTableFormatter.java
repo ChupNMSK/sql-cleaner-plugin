@@ -1,8 +1,6 @@
 package plugin.formatter.ddl.create;
 
 
-import static plugin.model.xml.enums.QueryType.CREATE;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -14,12 +12,10 @@ import java.util.regex.Pattern;
 import org.joni.exception.SyntaxException;
 
 import lombok.extern.slf4j.Slf4j;
-import plugin.formatter.Formatter;
 import plugin.formatter.QueryFormatter;
 import plugin.model.sql.Keywords;
 
 @Slf4j
-@Formatter(queryType = CREATE)
 public class CreateTableFormatter implements QueryFormatter {
     private static final Pattern CREATE_TABLE_PATTERN = Pattern.compile("(?i)CREATE\\s+TABLE\\s+(.*?)\\s");
     private static final Pattern COLUMN_PATTERN = Pattern.compile("(\\w+)\\s+((?:\\w+\\(\\d+(?:,\\d+)?\\)|\\w+)\\s*)(.*?)(?:,\\s*|$)");

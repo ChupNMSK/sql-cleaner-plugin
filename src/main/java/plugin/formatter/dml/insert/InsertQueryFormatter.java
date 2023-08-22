@@ -1,27 +1,23 @@
 package plugin.formatter.dml.insert;
 
-import static plugin.model.xml.enums.QueryType.INSERT;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lombok.extern.slf4j.Slf4j;
-import plugin.formatter.Formatter;
 import plugin.formatter.QueryFormatter;
 
 @Slf4j
-@Formatter(queryType = INSERT)
 public class InsertQueryFormatter implements QueryFormatter {
 
     private static final Pattern INSERT_INTO_PATTERN =
                                     Pattern.compile("(?i)INSERT\\s+INTO\\s+(.*?)\\s+");
     private static final Pattern COLUMNS_VALUES_PATTERN = Pattern.compile("\\(([^),]+(?:,\\s*[^),]+)+)\\)");
 
-    private static int MAX_LENGHT = 120;
+    private static final int MAX_LENGTH = 120;
 
-    private static int DIVINE_ON = 3;
+    private static final int DIVINE_ON = 3;
 
     @Override
     public String format(String query) {
@@ -31,7 +27,7 @@ public class InsertQueryFormatter implements QueryFormatter {
         log.info("Column values map: {}", map);
         boolean isTooLong = map.values()
                                 .stream()
-                                .anyMatch(str -> str.length() + 4 > MAX_LENGHT);
+                                .anyMatch(str -> str.length() + 4 > MAX_LENGTH);
         if(isTooLong) {
             map.forEach((key, value) -> map.put(key, divideAndAlign(value, DIVINE_ON)));
         } else {
