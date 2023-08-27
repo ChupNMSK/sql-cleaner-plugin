@@ -27,17 +27,33 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-
+        <editorFactoryListener implementation="plugin.listener.EditorListener"/>
+        <editorFactoryMouseListener implementation="plugin.listener.EditorPopupMenuListener"/>
     </extensions>
 
 
     <actions>
-        <action id="YourPlugin.ActionId"
-                class="plugin.action.FormatSqlAction"
-                text="Format SQL"
-                description="Format SQL code in the current editor"
-                icon="/icons/broom-icon12.svg">
-            <add-to-group group-id="EditorPopupMenu" anchor="last" />
-        </action>
+        <group id="FormattingAction">
+            <action id="FormatWholeFile"
+                    class="plugin.action.FormatWholeSqlFileAction"
+                    text="Format All SQL"
+                    description="Format SQL code in the current editor"
+                    icon="/icons/broom-icon12.svg">
+            </action>
+        </group>
+
+            <action id="FormatSelected"
+                    class="plugin.action.FormatSelectedSqlAction"
+                    text="Format Selected SQL"
+                    description="Format SQL code in highlighted frame"
+                    icon="/icons/broom-icon12.svg">
+            </action>
     </actions>
+
+    <projectListeners>
+        <listener class="plugin.listener.SqlHighlightingListener"
+                  topic="com.intellij.openapi.editor.event.EditorMouseMotionListener"/>
+        <listener class="plugin.listener.SqlHighlightingListener"
+                  topic="com.intellij.openapi.editor.event.EditorMouseListener"/>
+    </projectListeners>
 </idea-plugin>
