@@ -1,1 +1,1 @@
-delete from table_name where column1 = value1 and column2 = value2;
+delete from TABLE_NAME where COLUMN1 = value1 and COLUMN2 = VALUE2;
