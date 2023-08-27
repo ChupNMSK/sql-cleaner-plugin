@@ -3,8 +3,6 @@ package plugin.action;
 import static java.util.Objects.isNull;
 
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +18,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 
 @Slf4j
-public class FormatSqlAction extends AnAction {
+public class FormatWholeSqlFileAction extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
