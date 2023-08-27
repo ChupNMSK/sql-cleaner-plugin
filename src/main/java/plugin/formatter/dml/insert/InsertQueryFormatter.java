@@ -1,9 +1,9 @@
 package plugin.formatter.dml.insert;
 
-import static plugin.formatter.GeneralConfig.BR;
-import static plugin.formatter.GeneralConfig.DIVINE_ON;
-import static plugin.formatter.GeneralConfig.MAX_LENGTH;
-import static plugin.formatter.GeneralConfig.TAB;
+import static plugin.config.GeneralConfig.BR;
+import static plugin.config.GeneralConfig.DIVINE_ON;
+import static plugin.config.GeneralConfig.MAX_LENGTH;
+import static plugin.config.GeneralConfig.TAB;
 import static plugin.util.StringsUtil.replaceLastEntry;
 
 import java.util.HashMap;
