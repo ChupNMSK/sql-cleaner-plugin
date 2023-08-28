@@ -1,8 +1,8 @@
 package plugin.formatter.ddl.create;
 
 
-import static plugin.config.GeneralConfig.BR;
-import static plugin.config.GeneralConfig.TAB;
+import static plugin.config.PluginConfig.BR;
+import static plugin.config.PluginConfig.TAB;
 import static plugin.model.sql.Keywords.DDL.CONSTRAINT;
 import static plugin.util.StringsUtil.leftAlign;
 

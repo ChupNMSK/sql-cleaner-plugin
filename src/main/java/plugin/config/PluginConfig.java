@@ -1,9 +1,12 @@
 package plugin.config;
 
-import java.awt.*;
+import java.awt.Color;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 //todo make it configurable
-public class GeneralConfig {
+public class PluginConfig {
 
     public static final int MAX_LENGTH = 120;
 

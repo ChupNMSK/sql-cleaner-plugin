@@ -1,5 +1,8 @@
 package plugin.util;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class StringsUtil {
 
     public static void replaceLastEntry(String oldValue, String newValue, StringBuilder sb) {
