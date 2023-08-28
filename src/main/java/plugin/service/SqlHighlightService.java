@@ -52,17 +52,11 @@ public final class SqlHighlightService {
         var document = event.getEditor().getDocument();
 
         int eventLine = event.getLogicalPosition().line;
-        int endOffset = event.getOffset();
-
         for (int currentLine = eventLine; currentLine >= 0; currentLine--) {
             String line = getLineText(currentLine, document);
 
             if (line.isEmpty()) {
                 return Optional.empty();
-            }
-
-            if (currentLine == eventLine) {
-                line = document.getText(new TextRange(document.getLineStartOffset(currentLine), endOffset));
             }
 
             if (isSQLQueryBoundary(line)) {
