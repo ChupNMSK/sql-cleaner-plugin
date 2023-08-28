@@ -1,6 +1,6 @@
 package plugin.formatter.dml.delete;
 
-import static plugin.config.GeneralConfig.BR;
+import static plugin.config.PluginConfig.BR;
 import static plugin.model.sql.Keywords.Conditional.IN;
 import static plugin.model.sql.Keywords.Conditional.WHERE;
 import static plugin.model.sql.Keywords.DML.DELETE;
