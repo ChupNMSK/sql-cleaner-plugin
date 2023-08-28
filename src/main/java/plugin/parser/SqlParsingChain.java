@@ -54,7 +54,7 @@ public class SqlParsingChain {
             //go to next node
             String token = tokenizer.nextToken().trim().toUpperCase(); //keywords are stored in upper case
 
-            log.info("Token: {}", token);
+            log.debug("Token: {}", token);
             if (!token.isEmpty() && children.containsKey(token)) {
                 SqlParsingChain childNode = children.get(token);
                 return childNode.format(tokenizer, query);

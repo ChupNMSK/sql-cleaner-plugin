@@ -95,7 +95,7 @@ public class CreateTableQueryFormatter implements QueryFormatter {
                 .orElse(0);
 
         // Calculate column widths for alignment
-        Map<String, Integer> columnWidths = foundMaxLenthForEachColumn(columnsMap);
+        Map<String, Integer> columnWidths = foundMaxLengthForEachColumn(columnsMap);
 
         StringBuilder columnNamesTypesConstraints = new StringBuilder();
 
@@ -124,7 +124,7 @@ public class CreateTableQueryFormatter implements QueryFormatter {
 
 
     // Calculate column widths for alignment
-    private Map<String, Integer> foundMaxLenthForEachColumn(Map<String, List<String>> columnsMap) {
+    private Map<String, Integer> foundMaxLengthForEachColumn(Map<String, List<String>> columnsMap) {
         Map<String, Integer> columnWidths = new HashMap<>();
         for (Map.Entry<String, List<String>> entry : columnsMap.entrySet()) {
             String column = entry.getKey();
@@ -135,7 +135,7 @@ public class CreateTableQueryFormatter implements QueryFormatter {
                     .orElse(0);
             columnWidths.put(column, maxColumnWidth);
         }
-        log.info("Columns map {}, Column width {}", columnsMap, columnWidths);
+        log.debug("Columns map {}, Column width {}", columnsMap, columnWidths);
         return columnWidths;
     }
 }

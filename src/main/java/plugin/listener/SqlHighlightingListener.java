@@ -153,7 +153,6 @@ public class SqlHighlightingListener implements EditorMouseMotionListener, Edito
 
         if (editorMenu.containsAction(action)) {
             editorMenu.remove(action);
-            log.info("Action removed");
         }
     }
 

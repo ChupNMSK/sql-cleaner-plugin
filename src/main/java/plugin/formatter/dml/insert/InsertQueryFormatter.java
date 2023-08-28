@@ -27,7 +27,7 @@ public class InsertQueryFormatter implements QueryFormatter {
         String tableName = getTableName(query);
         Map<Integer, String> map = getColumnValues(query);
 
-        log.info("Column values map: {}", map);
+        log.debug("Column values map: {}", map);
         boolean isTooLong = map.values()
                 .stream()
                 .anyMatch(str -> str.length() + 4 > MAX_LENGTH);
@@ -59,7 +59,7 @@ public class InsertQueryFormatter implements QueryFormatter {
 
         replaceLastEntry("," + BR, ";", formattedQuery);
 
-        log.info("Formatted query {}", formattedQuery);
+        log.debug("Formatted query {}", formattedQuery);
         return formattedQuery.toString();
     }
 
@@ -73,7 +73,7 @@ public class InsertQueryFormatter implements QueryFormatter {
         Map<Integer, String> columnValues = parseColumnAndValues(query);
 
         alignColumnAndValues(columnValues);
-        log.info("Column values map: {}", columnValues);
+        log.debug("Column values map: {}", columnValues);
         return columnValues;
     }
 
