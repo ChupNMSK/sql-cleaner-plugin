@@ -13,6 +13,7 @@ import plugin.parser.SqlParser;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -42,16 +43,17 @@ public class FormatWholeSqlFileAction extends AnAction {
         }
 
         // Format the SQL code (simplified example)
-        log.info("Before formatting {} ", selectedText);
+        log.debug("Before formatting {} ", selectedText);
         var formattedSql = formatSql(selectedText);
-        log.info("After formatting {} ", formattedSql);
+        log.debug("After formatting {} ", formattedSql);
 
         // Replace the content of the editor with the formatted SQL within a write action
-        CommandProcessor.getInstance()
-                .runUndoTransparentAction(() ->
-                        ApplicationManager
-                                .getApplication()
-                                .runWriteAction(() -> document.setText(formattedSql)));
+        CommandProcessor.getInstance().executeCommand(
+                e.getProject(),
+                () ->  WriteAction.run(() -> document.setText(formattedSql)),
+                "Format All SQL",
+                "Format All SQL Group"
+        );
     }
 
     private String formatSql(String sql) {

@@ -12,6 +12,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
@@ -32,7 +33,7 @@ public class FormatSelectedSqlAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        log.info("On selected sql event action {}", e);
+        log.debug("On selected sql event action {}", e);
 
         var project = e.getProject();
         if (isNull(project)) {
@@ -58,25 +59,22 @@ public class FormatSelectedSqlAction extends AnAction {
 
         //todo: need to check if break line needs to be added after/before sql
 
-        CommandProcessor.getInstance()
-                .runUndoTransparentAction(() ->
-                        ApplicationManager
-                                .getApplication()
-                                .runWriteAction(() ->  editor.getDocument().replaceString(startOffset, endOffset, formattedSql)));
+        CommandProcessor.getInstance().executeCommand(
+                e.getProject(),
+                () ->  WriteAction.run(() -> editor.getDocument().replaceString(startOffset, endOffset, formattedSql)),
+                "Format Selected SQL",
+                "Format Selected Group"
+        );
 
-        log.info("SQl formatting:\n before {}\n after{}", targetSql, formattedSql);
+        log.debug("SQl formatting:\n before {}\n after{}", targetSql, formattedSql);
     }
 
     @Override
     public void beforeActionPerformedUpdate(@NotNull AnActionEvent e) {
-        log.info("State before update {}", sqlPosition);
-
         Optional.ofNullable(extractPosition(e.getDataContext()))
                 .ifPresent(positionPair ->
                         this.sqlPosition = positionPair
                 );
-
-        log.info("State after update {}", sqlPosition);
     }
 
     @SuppressWarnings("unchecked")
