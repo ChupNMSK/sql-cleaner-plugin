@@ -23,7 +23,7 @@ public class Keywords {
     }
 
     public enum Conditional {
-        WHERE, AND, OR, IN, BETWEEN, LIKE, IS_NULL
+        WHERE, AND, OR, IN, ANY, BETWEEN, LIKE,
     }
 
     public enum Functions {

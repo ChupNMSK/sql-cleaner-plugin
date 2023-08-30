@@ -33,6 +33,8 @@ public final class DeleteQueryFormatter implements QueryFormatter {
     public String format(String query) {
         Matcher matcher = DELETE_PATTERN.matcher(query);
 
+        System.err.println(query);
+
         if(!matcher.find()) {
             return query + ";";
         }
@@ -53,6 +55,8 @@ public final class DeleteQueryFormatter implements QueryFormatter {
     }
 
     private String formatDeleteWithWhere(String tableName, String condition) {
+        condition = condition.replace(';', ' '); //trim ';' in the end of query
+
         StringBuilder formattedQuery = new StringBuilder();
 
         int nestingLevel = 1;
@@ -77,11 +81,18 @@ public final class DeleteQueryFormatter implements QueryFormatter {
         for (int i = 0; i < conditionTokens.length; i++) {
             String token = conditionTokens[i];
 
+            if(Keywords.isKeyword(token)) {
+                token = token.toUpperCase();
+            }
+
             Matcher matcher = EQUALITTY_PATTERN.matcher(token);
             if (matcher.find()) {
                 String columnName = matcher.group(COLUMN_NAME).trim();
                 String conditionSign = matcher.group(CONDITION_SIGN).trim();
                 String value = matcher.group(VALUE).trim();
+                if(Keywords.isKeyword(value)) {
+                    value = value.toUpperCase();
+                }
                 conditionBuilder
                         .append(" ")
                         .append(columnName.toLowerCase())
@@ -96,7 +107,7 @@ public final class DeleteQueryFormatter implements QueryFormatter {
                 token = token.toLowerCase();
                 conditionBuilder.append(" ").append(token);
             }
-            else if (Keywords.isKeyword(token)) {
+            else if (Keywords.isKeyword(token, Keywords.Group.CONDITIONAL)) {
                 formatKeyword(conditionBuilder, token, nestingLevel, MAX_KEYWORD_LENGTH);
             }
             else {

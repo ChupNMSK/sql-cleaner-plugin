@@ -29,7 +29,7 @@ public class SqlParser {
 
 
     public static String parseAndFormat(String query) {
-        StringTokenizer tokenizer = new StringTokenizer(query, " ");
+        StringTokenizer tokenizer = new StringTokenizer(query);
 
         return ROOT.format(tokenizer, query);
     }

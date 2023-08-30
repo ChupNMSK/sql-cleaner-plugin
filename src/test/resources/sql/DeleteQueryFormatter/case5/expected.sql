@@ -1,3 +1,3 @@
 DELETE
   FROM table1
- WHERE column1 = ${value1};
+ WHERE boolean_col = FALSE;

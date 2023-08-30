@@ -1,4 +1,4 @@
 DELETE
   FROM table_name
- WHERE column1 = value1
+ WHERE boolean_column1 = TRUE
    AND column2 = VALUE2;

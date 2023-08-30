@@ -1,3 +1,3 @@
 DELETE
-FROM table1
-where column1 = ${value1};
+  FROM table1
+ WHERE boolean_col = FALSE;
