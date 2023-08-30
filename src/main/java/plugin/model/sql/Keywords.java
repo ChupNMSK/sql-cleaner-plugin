@@ -41,7 +41,7 @@ public class Keywords {
     }
 
     public enum DataTypes {
-        INT, VARCHAR, CHAR, DATE, TIME, TIMESTAMP, FLOAT, BOOLEAN
+        INT, VARCHAR, CHAR, DATE, TIME, TIMESTAMP, FLOAT, BOOLEAN, BOOL, TRUE, FALSE
     }
 
     public enum Transactions {

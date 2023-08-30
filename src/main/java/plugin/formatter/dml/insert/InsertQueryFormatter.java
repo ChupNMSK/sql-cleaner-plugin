@@ -13,12 +13,13 @@ import java.util.regex.Pattern;
 
 import lombok.extern.slf4j.Slf4j;
 import plugin.formatter.QueryFormatter;
+import plugin.model.sql.Keywords;
 
 @Slf4j
 public class InsertQueryFormatter implements QueryFormatter {
 
     private static final Pattern INSERT_INTO_PATTERN =
-            Pattern.compile("(?i)INSERT\\s+INTO\\s+(.*?)\\s+");
+            Pattern.compile("(?i)INSERT\\s+INTO\\s+(\\w*\\d*)\\s*");
     private static final Pattern COLUMNS_VALUES_PATTERN = Pattern.compile("\\(([^),]+(?:,\\s*[^),]+)+)\\)");
 
     @Override
@@ -27,18 +28,7 @@ public class InsertQueryFormatter implements QueryFormatter {
         String tableName = getTableName(query);
         Map<Integer, String> map = getColumnValues(query);
 
-        log.debug("Column values map: {}", map);
-        boolean isTooLong = map.values()
-                .stream()
-                .anyMatch(str -> str.length() + 4 > MAX_LENGTH);
-        if (isTooLong) {
-            map.forEach((key, value) -> map.put(key, divideAndAlign(value, DIVINE_ON)));
-        } else {
-            map.forEach((key, value) -> map.put(key, join(splitOnParts(value))));
-        }
-
         String columNames = map.remove(0); //first group is columns
-
 
         formattedQuery.append("INSERT INTO ")
                 .append(tableName.toLowerCase())
@@ -82,7 +72,7 @@ public class InsertQueryFormatter implements QueryFormatter {
 
         Matcher matcher = COLUMNS_VALUES_PATTERN.matcher(query);
         for (int group = 0; matcher.find(); group++) {
-            columnValues.put(group, matcher.group());
+            columnValues.put(group, matcher.group(1));
         }
 
         return columnValues;
@@ -101,24 +91,40 @@ public class InsertQueryFormatter implements QueryFormatter {
     }
 
     private String join(String[] parts) {
-        return String.join(", ", parts);
+        StringBuilder sb = new StringBuilder("(");
+
+        for(String currentWord : parts) {
+            if(Keywords.isKeyword(currentWord)) {
+                sb.append(currentWord.toUpperCase());
+            } else {
+                sb.append(currentWord);
+            }
+            sb.append(", ");
+        }
+        replaceLastEntry(", ", ")", sb);
+
+        return sb.toString();
     }
 
     private String divideAndAlign(String string, int divideOn) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("(");
 
         String[] parts = splitOnParts(string);
         for (int i = 0; i < parts.length; i++) {
+            var currentWord = parts[i];
+            if(Keywords.isKeyword(currentWord)) {
+                currentWord = currentWord.toUpperCase();
+            }
             if (i > 0 && i % divideOn == 0) {
                 //remove space in end of row
                 replaceLastEntry(" ", "", sb);
                 sb.append(BR).append(TAB + " ");
             }
 
-            sb.append(parts[i]).append(", ");
+            sb.append(currentWord).append(", ");
         }
 
-        replaceLastEntry(", ", "", sb);
+        replaceLastEntry(", ", ")", sb);
 
         return sb.toString();
     }
