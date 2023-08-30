@@ -15,7 +15,7 @@ public class Keywords {
     }
 
     public enum DDL {
-        CREATE, ALTER, DROP, TRUNCATE, TABLE, CONSTRAINT
+        CREATE, ALTER, DROP, TRUNCATE, TABLE, CONSTRAINT, PRIMARY, KEY, UNIQUE
     }
 
     public enum DML {

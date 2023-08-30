@@ -5,28 +5,32 @@ import static plugin.util.StringsUtil.BR;
 import static plugin.util.StringsUtil.COMA;
 import static plugin.util.StringsUtil.COMA_BR;
 import static plugin.util.StringsUtil.EMPTY_STR;
+import static plugin.util.StringsUtil.SPACE;
 import static plugin.util.StringsUtil.TAB;
 import static plugin.util.StringsUtil.leftAlign;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.joni.exception.SyntaxException;
 
 import lombok.extern.slf4j.Slf4j;
 import plugin.formatter.QueryFormatter;
+import plugin.model.sql.Keywords;
 import plugin.util.StringsUtil;
 
 @Slf4j
 public class CreateTableQueryFormatter implements QueryFormatter {
     private static final Pattern CREATE_TABLE_PATTERN = Pattern.compile("(?i)CREATE\\s+TABLE\\s+(.*?)\\s");
     private static final Pattern COLUMN_PATTERN =
-            Pattern.compile("(\\w+)\\s+((?:\\w+\\(\\d+(?:,\\d+)?\\)|\\w+)\\s*)(.*?)(?:,\\s*|$)");
+            Pattern.compile("(\\w+)\\s+((?:\\w+\\(\\d+(?:\\s*,\\s*\\d+)?\\)|\\w+)\\s*)(.*?)(?:,\\s*|$)");
 
     private static final String COLUMN_NAME = "columnNames";
     private static final String COLUMN_TYPE = "columnType";
@@ -69,11 +73,17 @@ public class CreateTableQueryFormatter implements QueryFormatter {
         Matcher columnMatcher = COLUMN_PATTERN.matcher(valueBetweenParentheses);
         while (columnMatcher.find()) {
             String columnName = columnMatcher.group(1).toLowerCase().trim();
-            if (CONSTRAINT.name().equalsIgnoreCase(columnName)) {
-                columnName = columnName.toUpperCase();
-            }
             String columnType = columnMatcher.group(2).toUpperCase().trim();
             String constraints = columnMatcher.group(3).toUpperCase().trim();
+
+            if(CONSTRAINT.name().equalsIgnoreCase(columnName)) {
+                columnName = columnName.toUpperCase(); //CONSTRAINT
+                columnType = columnType.toLowerCase(); //name of constraint
+                constraints = Arrays.stream(constraints.split("\\s"))
+                                    .map(String::toLowerCase)
+                                    .map(Keywords::convertIfKeywordToUppercase)
+                                    .collect(Collectors.joining(SPACE));
+            }
 
             columnsMap.get(COLUMN_NAME).add(columnName);
             columnsMap.get(COLUMN_TYPE).add(columnType);
