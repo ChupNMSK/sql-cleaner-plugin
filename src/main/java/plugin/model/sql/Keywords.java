@@ -37,7 +37,7 @@ public class Keywords {
     }
 
     public enum Joins {
-         JOIN, INNER, LEFT, RIGHT, FULL, CROSS, SELF
+        JOIN, INNER, LEFT, RIGHT, FULL, CROSS, SELF
     }
 
     public enum DataTypes {
@@ -52,6 +52,7 @@ public class Keywords {
     // Map to associate keywords with their corresponding groups
     private static final Map<String, Group> keywordGroupMap = new HashMap<>();
     private static final Map<Group, Set<String>> groupKeywordsMap = new EnumMap<>(Group.class);
+
     static {
         putGroup(Group.DDL, DDL.values());
         putGroup(Group.DML, DML.values());
@@ -63,7 +64,7 @@ public class Keywords {
         putGroup(Group.TRANSACTIONS, Transactions.values());
     }
 
-    private static void putGroup(Group group,  Enum[] keywords) {
+    private static void putGroup(Group group, Enum[] keywords) {
         associateKeywordsWithGroup(group, keywords);
         associateGroupWithKeywords(group, keywords);
     }
@@ -76,8 +77,8 @@ public class Keywords {
 
     private static void associateGroupWithKeywords(Group group, Enum[] keywords) {
         groupKeywordsMap.put(group, Arrays.stream(keywords)
-                                                    .map(Enum::name)
-                                                    .collect(Collectors.toSet()));
+                .map(Enum::name)
+                .collect(Collectors.toSet()));
     }
 
     public static boolean isKeyword(String candidate) {
@@ -86,5 +87,15 @@ public class Keywords {
 
     public static boolean isKeyword(String candidate, Group group) {
         return groupKeywordsMap.get(group).contains(candidate.toUpperCase());
+    }
+
+    public static String convertIfKeywordToUppercase(String candidate) {
+        String candidateInUppercase = candidate.toUpperCase();
+
+        if (keywordGroupMap.containsKey(candidateInUppercase)) {
+            return candidateInUppercase;
+        } else {
+            return candidate;
+        }
     }
 }

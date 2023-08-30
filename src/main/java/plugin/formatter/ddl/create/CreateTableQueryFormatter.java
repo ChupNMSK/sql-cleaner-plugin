@@ -1,9 +1,11 @@
 package plugin.formatter.ddl.create;
 
-
-import static plugin.config.PluginConfig.BR;
-import static plugin.config.PluginConfig.TAB;
 import static plugin.model.sql.Keywords.DDL.CONSTRAINT;
+import static plugin.util.StringsUtil.BR;
+import static plugin.util.StringsUtil.COMA;
+import static plugin.util.StringsUtil.COMA_BR;
+import static plugin.util.StringsUtil.EMPTY_STR;
+import static plugin.util.StringsUtil.TAB;
 import static plugin.util.StringsUtil.leftAlign;
 
 import java.util.ArrayList;
@@ -110,14 +112,13 @@ public class CreateTableQueryFormatter implements QueryFormatter {
                     rowString.append(leftAlign(columnWidths.get(column), columnsMap.get(column).get(i)));
                 }
             }
-            rowString.append(",")
-                        .append(BR);
+            rowString.append(COMA_BR);
 
             columnNamesTypesConstraints
                     .append(rowString);
         }
 
-        StringsUtil.replaceLastEntry(",", "", columnNamesTypesConstraints);
+        StringsUtil.replaceLastEntry(COMA, EMPTY_STR, columnNamesTypesConstraints);
 
         return columnNamesTypesConstraints.toString();
     }

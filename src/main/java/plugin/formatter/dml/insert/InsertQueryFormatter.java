@@ -1,9 +1,17 @@
 package plugin.formatter.dml.insert;
 
-import static plugin.config.PluginConfig.BR;
 import static plugin.config.PluginConfig.DIVINE_ON;
 import static plugin.config.PluginConfig.MAX_LENGTH;
-import static plugin.config.PluginConfig.TAB;
+import static plugin.model.sql.Keywords.convertIfKeywordToUppercase;
+import static plugin.util.StringsUtil.BR;
+import static plugin.util.StringsUtil.COMA;
+import static plugin.util.StringsUtil.COMA_BR;
+import static plugin.util.StringsUtil.COMA_SPACE;
+import static plugin.util.StringsUtil.EMPTY_STR;
+import static plugin.util.StringsUtil.SEMICOLON;
+import static plugin.util.StringsUtil.SPACE;
+import static plugin.util.StringsUtil.TAB;
+import static plugin.util.StringsUtil.TAB_SPACE;
 import static plugin.util.StringsUtil.replaceLastEntry;
 
 import java.util.HashMap;
@@ -13,7 +21,6 @@ import java.util.regex.Pattern;
 
 import lombok.extern.slf4j.Slf4j;
 import plugin.formatter.QueryFormatter;
-import plugin.model.sql.Keywords;
 
 @Slf4j
 public class InsertQueryFormatter implements QueryFormatter {
@@ -42,12 +49,12 @@ public class InsertQueryFormatter implements QueryFormatter {
 
         for (String valueGroup : map.values()) {
             formattedQuery.append(valueGroup)
-                    .append(",")
+                    .append(COMA)
                     .append(BR)
                     .append(TAB);
         }
 
-        replaceLastEntry("," + BR, ";", formattedQuery);
+        replaceLastEntry(COMA_BR, SEMICOLON, formattedQuery);
 
         log.debug("Formatted query {}", formattedQuery);
         return formattedQuery.toString();
@@ -93,15 +100,11 @@ public class InsertQueryFormatter implements QueryFormatter {
     private String join(String[] parts) {
         StringBuilder sb = new StringBuilder("(");
 
-        for(String currentWord : parts) {
-            if(Keywords.isKeyword(currentWord)) {
-                sb.append(currentWord.toUpperCase());
-            } else {
-                sb.append(currentWord);
-            }
-            sb.append(", ");
+        for (String currentWord : parts) {
+            currentWord = convertIfKeywordToUppercase(currentWord);
+            sb.append(currentWord).append(COMA_SPACE);
         }
-        replaceLastEntry(", ", ")", sb);
+        replaceLastEntry(COMA_SPACE, ")", sb);
 
         return sb.toString();
     }
@@ -111,20 +114,18 @@ public class InsertQueryFormatter implements QueryFormatter {
 
         String[] parts = splitOnParts(string);
         for (int i = 0; i < parts.length; i++) {
-            var currentWord = parts[i];
-            if(Keywords.isKeyword(currentWord)) {
-                currentWord = currentWord.toUpperCase();
-            }
+            var currentWord = convertIfKeywordToUppercase(parts[i]);
+
             if (i > 0 && i % divideOn == 0) {
                 //remove space in end of row
-                replaceLastEntry(" ", "", sb);
-                sb.append(BR).append(TAB + " ");
+                replaceLastEntry(SPACE, EMPTY_STR, sb);
+                sb.append(BR).append(TAB_SPACE);
             }
 
-            sb.append(currentWord).append(", ");
+            sb.append(currentWord).append(COMA_SPACE);
         }
 
-        replaceLastEntry(", ", ")", sb);
+        replaceLastEntry(COMA_SPACE, ")", sb);
 
         return sb.toString();
     }

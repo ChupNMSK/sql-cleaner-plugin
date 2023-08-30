@@ -1,10 +1,14 @@
 package plugin.formatter.dml.delete;
 
-import static plugin.config.PluginConfig.BR;
 import static plugin.model.sql.Keywords.Conditional.IN;
 import static plugin.model.sql.Keywords.Conditional.WHERE;
 import static plugin.model.sql.Keywords.DML.DELETE;
 import static plugin.model.sql.Keywords.DML.FROM;
+import static plugin.model.sql.Keywords.convertIfKeywordToUppercase;
+import static plugin.util.StringsUtil.BR;
+import static plugin.util.StringsUtil.EMPTY_STR;
+import static plugin.util.StringsUtil.SEMICOLON;
+import static plugin.util.StringsUtil.SPACE;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,10 +37,8 @@ public final class DeleteQueryFormatter implements QueryFormatter {
     public String format(String query) {
         Matcher matcher = DELETE_PATTERN.matcher(query);
 
-        System.err.println(query);
-
-        if(!matcher.find()) {
-            return query + ";";
+        if (!matcher.find()) {
+            return query + SEMICOLON;
         }
 
         String tableName = matcher.group(TABLE_NAME_GROUP);
@@ -51,11 +53,11 @@ public final class DeleteQueryFormatter implements QueryFormatter {
     }
 
     private String formatDeleteWithoutWhere(String tableName) {
-        return "DELETE FROM " + tableName.toLowerCase() + ";";
+        return "DELETE FROM " + tableName.toLowerCase() + SEMICOLON;
     }
 
     private String formatDeleteWithWhere(String tableName, String condition) {
-        condition = condition.replace(';', ' '); //trim ';' in the end of query
+        condition = condition.replace(SEMICOLON, EMPTY_STR); //trim ';' in the end of query
 
         StringBuilder formattedQuery = new StringBuilder();
 
@@ -63,10 +65,10 @@ public final class DeleteQueryFormatter implements QueryFormatter {
 
         formatKeyword(formattedQuery, DELETE.name(), nestingLevel, MAX_KEYWORD_LENGTH);
         formatKeyword(formattedQuery, FROM.name(), nestingLevel, MAX_KEYWORD_LENGTH);
-        formattedQuery.append(" ").append(tableName.toLowerCase());
+        formattedQuery.append(SPACE).append(tableName.toLowerCase());
         formatKeyword(formattedQuery, WHERE.name(), nestingLevel, MAX_KEYWORD_LENGTH);
         formattedQuery.append(formatCondition(condition));
-        formattedQuery.append(";");
+        formattedQuery.append(SEMICOLON);
 
         return formattedQuery.toString().trim();
     }
@@ -79,39 +81,31 @@ public final class DeleteQueryFormatter implements QueryFormatter {
 
 
         for (int i = 0; i < conditionTokens.length; i++) {
-            String token = conditionTokens[i];
-
-            if(Keywords.isKeyword(token)) {
-                token = token.toUpperCase();
-            }
+            String token = convertIfKeywordToUppercase(conditionTokens[i]);
 
             Matcher matcher = EQUALITTY_PATTERN.matcher(token);
             if (matcher.find()) {
                 String columnName = matcher.group(COLUMN_NAME).trim();
                 String conditionSign = matcher.group(CONDITION_SIGN).trim();
-                String value = matcher.group(VALUE).trim();
-                if(Keywords.isKeyword(value)) {
-                    value = value.toUpperCase();
-                }
+                String value = convertIfKeywordToUppercase(matcher.group(VALUE).trim());
+
                 conditionBuilder
-                        .append(" ")
+                        .append(SPACE)
                         .append(columnName.toLowerCase())
-                        .append(" ")
+                        .append(SPACE)
                         .append(conditionSign)
-                        .append(" ")
+                        .append(SPACE)
                         .append(value);
-            }
-            else if (i == 0 //first token after WHERE is always column name
-                        || i != conditionTokens.length - 1
-                        && isCondition(conditionTokens[i + 1])) { //look ahead if next is condition so currently token is column name
+            } else if (i == 0 //first token after WHERE is always column name
+                    || i != conditionTokens.length - 1
+                    && isCondition(
+                    conditionTokens[i + 1])) { //look ahead if next is condition so currently token is column name
                 token = token.toLowerCase();
-                conditionBuilder.append(" ").append(token);
-            }
-            else if (Keywords.isKeyword(token, Keywords.Group.CONDITIONAL)) {
+                conditionBuilder.append(SPACE).append(token);
+            } else if (Keywords.isKeyword(token, Keywords.Group.CONDITIONAL)) {
                 formatKeyword(conditionBuilder, token, nestingLevel, MAX_KEYWORD_LENGTH);
-            }
-            else {
-                conditionBuilder.append(" ").append(token);
+            } else {
+                conditionBuilder.append(SPACE).append(token);
             }
         }
         return conditionBuilder.toString();
@@ -120,8 +114,8 @@ public final class DeleteQueryFormatter implements QueryFormatter {
     //todo: align right method
     private void formatKeyword(StringBuilder sb, String keyword, int nestingLevel, int maxKeywordLength) {
         sb.append(BR);
-        sb.append(" ".repeat(nestingLevel * (maxKeywordLength - keyword.length())));
-        sb.append(keyword.toUpperCase());
+        sb.append(SPACE.repeat(nestingLevel * (maxKeywordLength - keyword.length())));
+        sb.append(keyword);
     }
 
     private int getMaxKeywordLength(String[] tokens) {
